@@ -22,7 +22,7 @@ const labels = {
 
 const AWS_ACCESS_KEY_ID = 'AKIAQVJW6EGPAOLP2JPF';
 const AWS_SECRET_ACCESS_KEY = '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';
-const AWS_S3_JSON_BUCKET_NAME = 'hamal';
+const AWS_S3_JSON_BUCKET_NAME = 'hamal-hamal';
 
 AWS.config.update({
   accessKeyId: AWS_ACCESS_KEY_ID,
