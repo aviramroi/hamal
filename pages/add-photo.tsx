@@ -77,8 +77,7 @@ export default function AddPhoto() {
           source,
           photo,
           faceId: res.uuid,
-          generatedName,
-          file
+          generatedName
         };
 
         const b = await s3_json_upload(file, generatedName);
