@@ -8,8 +8,8 @@ import { toast } from 'sonner';
 import { insertFace } from '@/lib/api/hamal';
 
 const labels = {
-  title: 'העלת תמונה למאגר',
-  descritpion: 'תמונה שרצה ברשת, תמונה מהטלוויזיה, או תמונות שצילמתם',
+  title: 'חיפוש אדם במאגר',
+  descritpion: 'העלו תמונה של מישהו שאתם מחפשים, אם הוא קיים במאגר הוא יוצג',
   nameLabel: 'שם האדם',
   namePlaceholder: 'מלאו את שם האדם',
   pictureLabel: 'העלאת תמונה',
@@ -49,24 +49,14 @@ export default function AddPhoto() {
           }).then(async (re) => {
             const da = await re.json();
             console.log({ da });
-            setState({ ...state, [index]: da });
+            setState({ ...state, [index]: da[0] });
           });
         });
       }
-
-      if (res.status === 'success') {
-        // should save
-        // fetch(`/api/hamal`, {
-        //   method: 'POST',
-        //   body: JSON.stringify({ data: obj })
-        // }).then(async (r) => {
-        //   const da = await r.json();
-        //   console.log({ da });
-        //   toast.success(labels.success);
-        // });
-      }
     });
   };
+
+  console.log({ state });
 
   return (
     <div className=" p-8 pb-0 flex flex-col h-full w-4/5 mx-auto gap-8">
@@ -106,11 +96,24 @@ export default function AddPhoto() {
           </button>
         )}
       </div>
-
-      {state &&
-        Object.keys(state).map((key: string) => {
-          return <div key={key}>{state[key].source}</div>;
-        })}
+      {state && (
+        <>
+          <h2 className=" text-2xl">תוצאות:</h2>
+          <div className="flex gap-4">
+            {state &&
+              Object.keys(state).map((key: string) => {
+                return (
+                  <>
+                    <div key={key}>
+                      <img src={state[key].serialized} className=" w-36" />
+                      מקור: {state[key].source}{' '}
+                    </div>
+                  </>
+                );
+              })}
+          </div>
+        </>
+      )}
     </div>
   );
 }
