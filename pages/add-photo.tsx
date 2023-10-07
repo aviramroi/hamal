@@ -5,6 +5,8 @@ import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { addPerson } from '../lib/recognition';
 import { toast } from 'sonner';
+import { insertFace } from '@/lib/api/hamal';
+import AWS from 'aws-sdk';
 
 const labels = {
   title: 'העלת תמונה למאגר',
@@ -18,6 +20,46 @@ const labels = {
   success: 'התמונה הועלתה בהצלחה'
 };
 
+const AWS_ACCESS_KEY_ID = 'AKIAQVJW6EGPAOLP2JPF';
+const AWS_SECRET_ACCESS_KEY = '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';
+const AWS_S3_JSON_BUCKET_NAME = 'hamal';
+
+AWS.config.update({
+  accessKeyId: AWS_ACCESS_KEY_ID,
+  secretAccessKey: AWS_SECRET_ACCESS_KEY
+});
+const s3 = new AWS.S3({
+  region: 'eu-central-1'
+});
+
+async function s3_json_upload(file: any, name: string) {
+  const params = {
+    Bucket: AWS_S3_JSON_BUCKET_NAME,
+    Key: `pics/injury/${name}`,
+    Body: file
+    // ContentType: 'application/json; charset=utf-8'
+  };
+  try {
+    return await s3
+      .upload(params)
+      .promise()
+      .then((data: any) => {
+        // console.log(`File uploaded successfully.  ${data.Location}`);
+        // should save the file to the form
+
+        return data;
+      })
+      .catch((err: any) => {
+        console.log({ err });
+        throw err;
+      });
+  } catch (e) {
+    console.log(e);
+    // should send some tracking
+    return 'Failed';
+  }
+}
+
 export default function AddPhoto() {
   const [photo, setPhoto] = useState('');
   const [source, setSource] = useState('');
@@ -27,11 +69,32 @@ export default function AddPhoto() {
 
   const onSubmit = async () => {
     setLoading(true);
-    await addPerson(uuidv4(), file as File, '', (res) => {
-      console.log(res);
+    const generatedName = uuidv4();
+    await addPerson(generatedName, file as File, '', async (res) => {
       if (res.status === 'success') {
-        setLoading(false);
-        toast.success(labels.success);
+        // should save
+        const obj = {
+          source,
+          photo,
+          faceId: res.uuid,
+          generatedName,
+          file
+        };
+
+        const b = await s3_json_upload(file, generatedName);
+
+        fetch(`/api/hamal`, {
+          method: 'POST',
+          body: JSON.stringify({ ...obj, serialized: b.Location }),
+          headers: {
+            ContentType: 'application/json'
+          }
+        }).then(async (r) => {
+          const da = await r.json();
+
+          setLoading(false);
+          toast.success(labels.success);
+        });
       } else {
         toast.error(labels.error);
       }

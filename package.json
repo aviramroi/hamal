@@ -17,9 +17,13 @@
     "@types/react": "^18.0.11",
     "aws-sdk": "^2.1327.0",
     "dayjs": "^1.11.7",
+    "dgram": "^1.0.1",
+    "dns": "^0.2.2",
     "dotenv": "^16.0.1",
+    "fs": "^0.0.1-security",
     "js-cookie": "^3.0.1",
     "mongodb": "^4.6.0",
+    "net": "^1.0.2",
     "next": "12.1.6",
     "next-auth": "^4.3.1",
     "next-mdx-remote": "^4.0.3",
@@ -34,6 +38,7 @@
     "remark-mdx": "^2.1.1",
     "sonner": "^0.1.6",
     "swr": "^2.0.0-beta.1",
+    "tls": "^0.0.1",
     "uuid": "^9.0.1",
     "xlsx": "^0.18.5"
   },
@@ -55,5 +60,10 @@
     "singleQuote": true,
     "tabWidth": 2,
     "trailingComma": "none"
+  },
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
   }
 }
